@@ -10,6 +10,30 @@ export default function Introduction() {
   const {sm} = useSocketManager();
   const [delayBetweenRounds, setDelayBetweenRounds] = useState<number>(2);
 
+  const students = [
+    {
+      id: 1,
+      name: "Jay Thakare",
+      roll_no: 10
+    },
+    {
+      id: 2,
+      name: "Prathmesh Patil",
+      roll_no: 11
+    },
+    {
+      id: 3,
+      name: "Pratik Thakare",
+      roll_no: 12
+    },
+    {
+      id: 4,
+      name: "Krish R",
+      roll_no: 13
+    }
+  ]
+  const shuffleStudents = students.sort(() => Math.random() - 0.5)
+
   useEffect(() => {
     if (router.query.lobby) {
       sm.emit({
@@ -32,6 +56,22 @@ export default function Introduction() {
 
     emitEvent('lobby_create');
   };
+
+  const handleCreateLobby = (mode: 'solo' | 'duo') => {
+    for (const student of shuffleStudents){
+      console.log(student.id)
+      sm.emit({
+        event: ClientEvents.LobbyCreate,
+        data: {
+          mode: mode,
+          delayBetweenRounds: delayBetweenRounds,
+          student_id: student.id
+        },
+      });
+  
+      emitEvent('lobby_create');
+    }
+  }
 
   return (
     <div className="mt-4">
@@ -69,6 +109,8 @@ export default function Introduction() {
       <div className="mt-5 text-center flex justify-between">
         <button className="btn" onClick={() => onCreateLobby('solo')}>Create solo lobby</button>
         <button className="btn" onClick={() => onCreateLobby('duo')}>Create duo lobby</button>
+        <button className="btn" onClick={() => handleCreateLobby('solo')}>Create solo matches</button>
+        <button className="btn" onClick={() => handleCreateLobby('duo')}>Create duo matches</button>
       </div>
     </div>
   );
